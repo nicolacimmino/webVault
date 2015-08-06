@@ -1,0 +1,77 @@
+<script src="http://crypto-js.googlecode.com/svn/tags/3.1.2/build/rollups/aes.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+<script type="text/javascript" src="js/jquery.qrcode.min.js"></script>
+
+<script type="text/javascript">
+
+
+    var JsonFormatter = {
+        stringify: function (cipherParams) {
+            // create json object with ciphertext
+            var jsonObj = {
+                ct: cipherParams.ciphertext.toString(CryptoJS.enc.Base64)
+            };
+
+            // optionally add iv and salt
+            if (cipherParams.iv) {
+                jsonObj.iv = cipherParams.iv.toString();
+            }
+            if (cipherParams.salt) {
+                jsonObj.s = cipherParams.salt.toString();
+            }
+
+            // stringify json object
+            return JSON.stringify(jsonObj);
+        },
+
+        parse: function (jsonStr) {
+            // parse json string
+            var jsonObj = JSON.parse(jsonStr);
+
+            // extract ciphertext from json object, and create cipher params object
+            var cipherParams = CryptoJS.lib.CipherParams.create({
+                ciphertext: CryptoJS.enc.Base64.parse(jsonObj.ct)
+            });
+
+            // optionally extract iv and salt
+            if (jsonObj.iv) {
+                cipherParams.iv = CryptoJS.enc.Hex.parse(jsonObj.iv)
+            }
+            if (jsonObj.s) {
+                cipherParams.salt = CryptoJS.enc.Hex.parse(jsonObj.s)
+            }
+
+            return cipherParams;
+        }
+    };
+
+    function crypt()
+    {
+        var plaintext = $("#plaintext").val();
+        var encrypted = CryptoJS.AES.encrypt(plaintext, $("#masterPassword").val(),  { format: JsonFormatter } );
+        //$("#encrypted").val(encrypted.ciphertext.toString(CryptoJS.enc.Base64));
+        $("#encrypted").val(encrypted);
+        $('#qrcode').html('<div id="qrcodecanvas"></div>');
+        $('#qrcodecanvas').qrcode(encrypted.toString());
+    }
+
+    function decrypt()
+    {
+        var encrypted = $("#encrypted").val();
+        var decrypted = CryptoJS.AES.decrypt(encrypted, $("#masterPassword").val(),  { format: JsonFormatter });
+        $("#plaintext").val(decrypted.toString(CryptoJS.enc.Utf8));
+    }
+
+</script>
+
+<input type="text" id="masterPassword">
+
+<textarea id="plaintext" onkeyup="crypt()" style="height:100px">
+</textarea>
+
+<textarea id="encrypted" onkeyup="decrypt()" style="height:100px">
+</textarea>
+
+<div id="qrcode">
+
+</div>
