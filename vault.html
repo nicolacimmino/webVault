@@ -1,77 +1,74 @@
 <script src="http://crypto-js.googlecode.com/svn/tags/3.1.2/build/rollups/aes.js"></script>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
 <script type="text/javascript" src="js/jquery.qrcode.min.js"></script>
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap-theme.min.css">
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
 
 <script type="text/javascript">
 
+    function crypt() {
+        var plaintext = JSON.stringify({
+            user: $("#username").val(),
+            pass: $("#password").val()
+        });
 
-    var JsonFormatter = {
-        stringify: function (cipherParams) {
-            // create json object with ciphertext
-            var jsonObj = {
-                ct: cipherParams.ciphertext.toString(CryptoJS.enc.Base64)
-            };
+        var encrypted = CryptoJS.AES.encrypt(plaintext, $("#masterPassword").val());
+        output = JSON.stringify({
+            account: $("#account").val(),
+            ct: encrypted.ciphertext.toString(CryptoJS.enc.Base64),
+            iv: encrypted.iv.toString(),
+            salt: encrypted.salt.toString()
+        }, null, 2);
 
-            // optionally add iv and salt
-            if (cipherParams.iv) {
-                jsonObj.iv = cipherParams.iv.toString();
-            }
-            if (cipherParams.salt) {
-                jsonObj.s = cipherParams.salt.toString();
-            }
-
-            // stringify json object
-            return JSON.stringify(jsonObj);
-        },
-
-        parse: function (jsonStr) {
-            // parse json string
-            var jsonObj = JSON.parse(jsonStr);
-
-            // extract ciphertext from json object, and create cipher params object
-            var cipherParams = CryptoJS.lib.CipherParams.create({
-                ciphertext: CryptoJS.enc.Base64.parse(jsonObj.ct)
-            });
-
-            // optionally extract iv and salt
-            if (jsonObj.iv) {
-                cipherParams.iv = CryptoJS.enc.Hex.parse(jsonObj.iv)
-            }
-            if (jsonObj.s) {
-                cipherParams.salt = CryptoJS.enc.Hex.parse(jsonObj.s)
-            }
-
-            return cipherParams;
-        }
-    };
-
-    function crypt()
-    {
-        var plaintext = $("#plaintext").val();
-        var encrypted = CryptoJS.AES.encrypt(plaintext, $("#masterPassword").val(),  { format: JsonFormatter } );
-        //$("#encrypted").val(encrypted.ciphertext.toString(CryptoJS.enc.Base64));
-        $("#encrypted").val(encrypted);
+        $("#encrypted").text(output);
         $('#qrcode').html('<div id="qrcodecanvas"></div>');
         $('#qrcodecanvas').qrcode(encrypted.toString());
     }
 
-    function decrypt()
-    {
+    function decrypt() {
+        //ciphertext: CryptoJS.enc.Base64.parse(jsonObj.ct)
+        //cipherParams.iv = CryptoJS.enc.Hex.parse(jsonObj.iv)
+        //cipherParams.salt = CryptoJS.enc.Hex.parse(jsonObj.s)
+
         var encrypted = $("#encrypted").val();
-        var decrypted = CryptoJS.AES.decrypt(encrypted, $("#masterPassword").val(),  { format: JsonFormatter });
+        var decrypted = CryptoJS.AES.decrypt(encrypted, $("#masterPassword").val());
         $("#plaintext").val(decrypted.toString(CryptoJS.enc.Utf8));
     }
 
 </script>
 
-<input type="text" id="masterPassword">
+<body>
 
-<textarea id="plaintext" onkeyup="crypt()" style="height:100px">
-</textarea>
-
-<textarea id="encrypted" onkeyup="decrypt()" style="height:100px">
-</textarea>
-
-<div id="qrcode">
-
+<div class="container">
+    <div class="col-md-4">
+        <form>
+            <div class="form-group">
+                <label>Master Password</label>
+                <input id="masterPassword" type="password" class="form-control" onkeyup="crypt()">
+            </div>
+            <div class="form-group">
+                <label>Account</label>
+                <input id="account" type="text" class="form-control" onkeyup="crypt()">
+            </div>
+            <div class="form-group">
+                <label>Username</label>
+                <input id="username" type="text" class="form-control" onkeyup="crypt()">
+            </div>
+            <div class="form-group">
+                <label>Password</label>
+                <input id="password" type="password" class="form-control" onkeyup="crypt()">
+            </div>
+        </form>
+    </div>
+    <div class="col-md-8">
+        <pre id="encrypted"></pre>
+        <div id="qrcode"></div>
+    </div>
 </div>
+</body>
+
+<!--
+<textarea id="encryptedinput" onkeyup="decrypt()" style="height:100px">
+</textarea>
+-->
