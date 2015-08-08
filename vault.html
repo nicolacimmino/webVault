@@ -1,73 +1,122 @@
 <script src="http://crypto-js.googlecode.com/svn/tags/3.1.2/build/rollups/aes.js"></script>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
-<script type="text/javascript" src="js/jquery.qrcode.min.js"></script>
+<script type="text/javascript" src="js/ext/jquery.qrcode.min.js"></script>
+<script type="text/javascript" src="js/ext/url.min.js"></script>
+
 <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
 <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap-theme.min.css">
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
-
-<script type="text/javascript">
-
-    function crypt() {
-        var plaintext = JSON.stringify({
-            user: $("#username").val(),
-            pass: $("#password").val()
-        });
-
-        var encrypted = CryptoJS.AES.encrypt(plaintext, $("#masterPassword").val());
-        output = JSON.stringify({
-            account: $("#account").val(),
-            ct: encrypted.ciphertext.toString(CryptoJS.enc.Base64),
-            iv: encrypted.iv.toString(),
-            salt: encrypted.salt.toString()
-        }, null, 2);
-
-        $("#encrypted").text(output);
-        $('#qrcode').html('<div id="qrcodecanvas"></div>');
-        $('#qrcodecanvas').qrcode(encrypted.toString());
-    }
-
-    function decrypt() {
-        //ciphertext: CryptoJS.enc.Base64.parse(jsonObj.ct)
-        //cipherParams.iv = CryptoJS.enc.Hex.parse(jsonObj.iv)
-        //cipherParams.salt = CryptoJS.enc.Hex.parse(jsonObj.s)
-
-        var encrypted = $("#encrypted").val();
-        var decrypted = CryptoJS.AES.decrypt(encrypted, $("#masterPassword").val());
-        $("#plaintext").val(decrypted.toString(CryptoJS.enc.Utf8));
-    }
-
-</script>
+<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.3/angular.min.js"></script>
 
 <body>
 
+<nav class="navbar navbar-default">
+    <div class="container-fluid">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse"
+                    data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="#">Vault</a>
+        </div>
+
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+            <ul class="nav navbar-nav">
+                <li><a href="#">Encrypt</a></li>
+                <li><a href="#">Decrypt</a></li>
+
+                <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true"
+                       aria-expanded="false">Saved Secrets<span class="caret"></span>
+                    </a>
+                    <ul class="dropdown-menu" id="savedSecretsMenu">
+                    </ul>
+                </li>
+            </ul>
+        </div>
+        <!-- /.navbar-collapse -->
+    </div>
+    <!-- /.container-fluid -->
+</nav>
+
 <div class="container">
-    <div class="col-md-4">
-        <form>
-            <div class="form-group">
-                <label>Master Password</label>
-                <input id="masterPassword" type="password" class="form-control" onkeyup="crypt()">
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            <h3 class="panel-title">Encrypt</h3>
+        </div>
+        <div class="panel-body">
+            <div class="col-md-2">
+                <form>
+                    <div class="form-group">
+                        <label>Master Password</label>
+                        <input id="masterPasswordEncrypt" type="password" class="form-control"
+                               onkeyup="window.vault.ui.onPlainTextChange()">
+                    </div>
+                    <div class="form-group">
+                        <label>Account</label>
+                        <input id="account" type="text" class="form-control"
+                               onkeyup="window.vault.ui.onPlainTextChange()">
+                    </div>
+                    <div class="form-group">
+                        <label>Username</label>
+                        <input id="username" type="text" class="form-control"
+                               onkeyup="window.vault.ui.onPlainTextChange()">
+                    </div>
+                    <div class="form-group">
+                        <label>Password</label>
+                        <input id="password" type="password" class="form-control"
+                               onkeyup="window.vault.ui.onPlainTextChange()">
+                    </div>
+                </form>
             </div>
-            <div class="form-group">
-                <label>Account</label>
-                <input id="account" type="text" class="form-control" onkeyup="crypt()">
+            <div class="col-md-6">
+                <pre id="encrypted"></pre>
+                <button class="btn btn-success" onclick="window.vault.ui.onStoreRequested()">Save</button>
+                <button>
+                    <span class="glyphicon glyphicon-qrcode" aria-hidden="true"></span>
+                </button>
             </div>
-            <div class="form-group">
-                <label>Username</label>
-                <input id="username" type="text" class="form-control" onkeyup="crypt()">
+            <div class="col-md-4">
+                <div id="qrcode"></div>
             </div>
-            <div class="form-group">
-                <label>Password</label>
-                <input id="password" type="password" class="form-control" onkeyup="crypt()">
-            </div>
-        </form>
+        </div>
     </div>
-    <div class="col-md-8">
-        <pre id="encrypted"></pre>
-        <div id="qrcode"></div>
+
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            <h3 class="panel-title">Decrypt</h3>
+        </div>
+        <div class="panel-body">
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label>Master Password</label>
+                    <input id="masterPasswordDecrypt" type="password" class="form-control"
+                           onkeyup="window.vault.ui.onEncryptedTextChange()">
+                </div>
+                <textarea class="form-control" rows="3" id="encryptedText" onchange="vault.ui.onEncryptedTextChange()"></textarea>
+            </div>
+            <div class="col-md-6">
+                <div id="decrypted">
+
+                </div>
+            </div>
+        </div>
     </div>
+
 </div>
 </body>
 
+<script type="text/javascript" src="js/vaultCrypto.js"></script>
+<script type="text/javascript" src="js/vaultUi.js"></script>
+
+<script>
+    // alert(url('?test'));
+</script>
 <!--
 <textarea id="encryptedinput" onkeyup="decrypt()" style="height:100px">
 </textarea>
