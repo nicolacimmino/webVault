@@ -27,8 +27,8 @@
         <!-- Collect the nav links, forms, and other content for toggling -->
         <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
             <ul class="nav navbar-nav">
-                <li><a href="#">Encrypt</a></li>
-                <li><a href="#">Decrypt</a></li>
+                <li><a href="?action=encrypt">Encrypt</a></li>
+                <li><a href="?action=decrypt">Decrypt</a></li>
 
                 <li class="dropdown">
                     <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true"
@@ -45,7 +45,7 @@
 </nav>
 
 <div class="container">
-    <div class="panel panel-default">
+    <div class="panel panel-default" id="panelEncrypt">
         <div class="panel-heading">
             <h3 class="panel-title">Encrypt</h3>
         </div>
@@ -76,6 +76,8 @@
             </div>
             <div class="col-md-6">
                 <pre id="encrypted"></pre>
+                <div id="decryptUrl"></div>
+
                 <button class="btn btn-success" onclick="window.vault.ui.onStoreRequested()">Save</button>
                 <button>
                     <span class="glyphicon glyphicon-qrcode" aria-hidden="true"></span>
@@ -87,7 +89,7 @@
         </div>
     </div>
 
-    <div class="panel panel-default">
+    <div class="panel panel-default" id="panelDecrypt">
         <div class="panel-heading">
             <h3 class="panel-title">Decrypt</h3>
         </div>
@@ -111,13 +113,4 @@
 </div>
 </body>
 
-<script type="text/javascript" src="js/vaultCrypto.js"></script>
-<script type="text/javascript" src="js/vaultUi.js"></script>
-
-<script>
-    // alert(url('?test'));
-</script>
-<!--
-<textarea id="encryptedinput" onkeyup="decrypt()" style="height:100px">
-</textarea>
--->
+<script type="text/javascript" src="js/vault.js"></script>
