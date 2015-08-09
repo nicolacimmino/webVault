@@ -19,7 +19,7 @@ window.vault.ui = (function ($, url) {
 
         if (url("?file")) {
             showDecryptPanel();
-            $("#encryptedText").val(localStorage.getItem(url("?file")));
+            $("#encryptedText").val(localStorage.getItem(url("?file") + ".cyp"));
         }
     }
 
@@ -88,6 +88,11 @@ window.vault.ui = (function ($, url) {
         var savedSecretsMenu = $("#savedSecretsMenu");
         savedSecretsMenu.text("");
         for (var fileName in localStorage) {
+            if(fileName.slice(-4) != ".cyp")
+            {
+                continue;
+            }
+            fileName = fileName.replace(".cyp", "");
             savedSecretsMenu.append(
                 '<li><a href="?file=' + fileName + '">' + fileName + '</a></li>'
             );
