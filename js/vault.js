@@ -10,29 +10,25 @@ window.vault.ui = (function ($, url) {
 
     function processQueryString() {
 
-        (url('?action') == 'decrypt')?showDecryptPanel():showEncryptPanel();
+        (url('?action') == 'decrypt') ? showDecryptPanel() : showEncryptPanel();
 
-        if(url("?secret"))
-        {
+        if (url("?secret")) {
             showDecryptPanel();
             $("#encryptedText").val(url("?secret"));
         }
 
-        if(url("?file"))
-        {
+        if (url("?file")) {
             showDecryptPanel();
             $("#encryptedText").val(localStorage.getItem(url("?file")));
         }
     }
 
-    function showEncryptPanel()
-    {
+    function showEncryptPanel() {
         $("#panelDecrypt").hide();
         $("#panelEncrypt").show();
     }
 
-    function showDecryptPanel()
-    {
+    function showDecryptPanel() {
         $("#panelDecrypt").show();
         $("#panelEncrypt").hide();
     }
@@ -53,11 +49,32 @@ window.vault.ui = (function ($, url) {
 
         $("#encrypted").text(encrypted);
 
+        var url = $(location).attr('origin') + "?secret=" + encodeURIComponent(encrypted);
         $("#decryptUrl").text("");
-        $("#decryptUrl").append("<a href='?secret=" + encodeURIComponent(encrypted) + "'>Link</a>");
+        $("#decryptUrl").append("<a href='" + url + "'>" + url + "</a>");
 
+    }
+
+    function showSecretQRCode()
+    {
+        $("#qrCodeModalLabel").text("Secret");
+        var toShow = $("#encrypted").text();
         $('#qrcode').html('<div id="qrcodecanvas"></div>');
-        $('#qrcodecanvas').qrcode(encrypted);
+        showQRCode(toShow);
+    }
+
+    function showSecretLinkQRCode()
+    {
+        $("#qrCodeModalLabel").text("Secret URL");
+        var toShow = $("#decryptUrl").text();
+        showQRCode(toShow);
+    }
+
+    function showQRCode(toShow)
+    {
+        $('#qrcode').html('<div id="qrcodecanvas"></div>');
+        $('#qrcodecanvas').qrcode(toShow);
+        $('#qrCodeText').text(toShow);
     }
 
     function onStoreRequested() {
@@ -93,13 +110,11 @@ window.vault.ui = (function ($, url) {
                 });
                 tableHtml += "</table>";
                 $("#decrypted").append(tableHtml);
-            } catch(e)
-            {
+            } catch (e) {
                 $("#decrypted").text(decrypted);
             }
         }
-        catch(e)
-        {
+        catch (e) {
             $("#decrypted").text("Invalid master password!");
         }
     }
@@ -109,7 +124,9 @@ window.vault.ui = (function ($, url) {
         onPlainTextChange: onPlainTextChange,
         onStoreRequested: onStoreRequested,
         populateSavedSecretsMenu: populateSavedSecretsMenu,
-        onEncryptedTextChange: onEncryptedTextChange
+        onEncryptedTextChange: onEncryptedTextChange,
+        showSecretQRCode: showSecretQRCode,
+        showSecretLinkQRCode: showSecretLinkQRCode
     };
 
 })(jQuery, url);
