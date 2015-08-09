@@ -120,7 +120,7 @@ window.vault.ui = (function ($, url) {
             }
         }
         catch (e) {
-            $("#decrypted").text("Invalid master password!");
+            $("#decrypted").text("");
         }
     }
 
