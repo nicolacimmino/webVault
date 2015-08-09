@@ -104,7 +104,7 @@ window.vault.ui = (function ($, url) {
 
             try {
                 var decryptedObj = JSON.parse(decrypted);
-                var tableHtml = "<table class='table table-condensed'>";
+                var tableHtml = "<br><table class='table table-condensed'>";
                 jQuery.each(decryptedObj, function (i, val) {
                     tableHtml += ("<tr><td>" + i + "</td><td>" + val + "</td></tr></tr>");
                 });
