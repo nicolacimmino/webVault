@@ -113,15 +113,17 @@ window.vault = (function ($, url) {
         if (sessionStorage.getItem("masterPassword") != null) {
             $("#buttonSaveMasterPassword").hide();
             $("#buttonClearMasterPassword").show();
+            $("#masterPasswordSetup").attr("placeholder", "****")
         }
         else {
             $("#buttonSaveMasterPassword").show();
             $("#buttonClearMasterPassword").hide();
+            $("#masterPasswordSetup").attr("placeholder", "Master Password")
         }
     }
 
     function getCurrentMasterPassword() {
-        return sessionStorage.getItem("masterPassword") || $("#masterPasswordSetup").val() || '';
+        return $("#masterPasswordSetup").val() || sessionStorage.getItem("masterPassword")  || '';
     }
 
     function onEncryptedTextChange() {
