@@ -1,6 +1,6 @@
 window.vault = window.vault || {};
 
-window.vault.ui = (function ($, url) {
+window.vault = (function ($, url) {
 
     function init() {
         onPlainTextChange();
@@ -16,11 +16,12 @@ window.vault.ui = (function ($, url) {
             showDecryptPanel();
             $("#encryptedText").val(url("?secret"));
         }
+    }
 
-        if (url("?file")) {
-            showDecryptPanel();
-            $("#encryptedText").val(localStorage.getItem(url("?file") + ".cyp"));
-        }
+    function showStoredFile(file)
+    {
+        showDecryptPanel();
+        $("#encryptedText").val(localStorage.getItem(file + ".cyp"));
     }
 
     function showEncryptPanel() {
@@ -94,7 +95,7 @@ window.vault.ui = (function ($, url) {
             }
             fileName = fileName.replace(".cyp", "");
             savedSecretsMenu.append(
-                '<li><a href="?file=' + fileName + '">' + fileName + '</a></li>'
+                '<li><a onclick="window.vault.showStoredFile(\'' + fileName + '\')">' + fileName + '</a></li>'
             );
         }
     }
@@ -131,9 +132,10 @@ window.vault.ui = (function ($, url) {
         populateSavedSecretsMenu: populateSavedSecretsMenu,
         onEncryptedTextChange: onEncryptedTextChange,
         showSecretQRCode: showSecretQRCode,
-        showSecretLinkQRCode: showSecretLinkQRCode
+        showSecretLinkQRCode: showSecretLinkQRCode,
+        showStoredFile: showStoredFile
     };
 
 })(jQuery, url);
 
-window.vault.ui.init();
+window.vault.init();

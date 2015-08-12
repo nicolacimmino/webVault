@@ -7,7 +7,6 @@
 
 <nav class="navbar navbar-default">
     <div class="container-fluid">
-        <!-- Brand and toggle get grouped for better mobile display -->
         <div class="navbar-header">
             <button type="button" class="navbar-toggle collapsed" data-toggle="collapse"
                     data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
@@ -18,13 +17,10 @@
             </button>
             <a class="navbar-brand" href="#">Vault</a>
         </div>
-
-        <!-- Collect the nav links, forms, and other content for toggling -->
         <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
             <ul class="nav navbar-nav">
                 <li><a href="?action=encrypt">Encrypt</a></li>
                 <li><a href="?action=decrypt">Decrypt</a></li>
-
                 <li class="dropdown">
                     <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true"
                        aria-expanded="false">Saved Secrets<span class="caret"></span>
@@ -34,9 +30,7 @@
                 </li>
             </ul>
         </div>
-        <!-- /.navbar-collapse -->
     </div>
-    <!-- /.container-fluid -->
 </nav>
 
 <div class="container">
@@ -50,38 +44,38 @@
                     <div class="form-group">
                         <label>Master Password</label>
                         <input id="masterPasswordEncrypt" type="password" class="form-control"
-                               onkeyup="window.vault.ui.onPlainTextChange()">
+                               onkeyup="window.vault.onPlainTextChange()">
                     </div>
                     <div class="form-group">
                         <label>Account</label>
                         <input id="account" type="text" class="form-control"
-                               onkeyup="window.vault.ui.onPlainTextChange()">
+                               onkeyup="window.vault.onPlainTextChange()">
                     </div>
                     <div class="form-group">
                         <label>Username</label>
                         <input id="username" type="text" class="form-control"
-                               onkeyup="window.vault.ui.onPlainTextChange()">
+                               onkeyup="window.vault.onPlainTextChange()">
                     </div>
                     <div class="form-group">
                         <label>Password</label>
                         <input id="password" type="password" class="form-control"
-                               onkeyup="window.vault.ui.onPlainTextChange()">
+                               onkeyup="window.vault.onPlainTextChange()">
                     </div>
                 </form>
             </div>
             <div class="col-md-6">
                 <label>Encrypted</label>
-                <button onclick="window.vault.ui.onStoreRequested()">
+                <button onclick="window.vault.onStoreRequested()">
                     <span class="glyphicon glyphicon-save" aria-hidden="true"></span>
                 </button>
-                <button onclick="window.vault.ui.showSecretQRCode()" data-toggle="modal" data-target="#qrCodeModal">
+                <button onclick="window.vault.showSecretQRCode()" data-toggle="modal" data-target="#qrCodeModal">
                     <span class="glyphicon glyphicon-qrcode" aria-hidden="true"></span>
                 </button>
 
                 <pre id="encrypted"></pre>
 
                 <label>Decrypt URL</label>
-                <button onclick="window.vault.ui.showSecretLinkQRCode()" data-toggle="modal" data-target="#qrCodeModal">
+                <button onclick="window.vault.showSecretLinkQRCode()" data-toggle="modal" data-target="#qrCodeModal">
                     <span class="glyphicon glyphicon-qrcode" aria-hidden="true"></span>
                 </button>
                 <pre id="decryptUrl"></pre>
@@ -99,13 +93,17 @@
                 <div class="form-group">
                     <label>Master Password</label>
                     <input id="masterPasswordDecrypt" type="password" class="form-control"
-                           onkeyup="window.vault.ui.onEncryptedTextChange()">
+                           onkeyup="window.vault.onEncryptedTextChange()">
                 </div>
+                <label>Secret</label>
                 <textarea class="form-control" rows="3" id="encryptedText"
-                          onchange="vault.ui.onEncryptedTextChange()"></textarea>
+                          onchange="vault.onEncryptedTextChange()"></textarea>
             </div>
             <div class="col-md-6">
-                <div id="decrypted">
+                <div class="form-group">
+                    <label>Plaintext</label>
+                    <pre id="decrypted">
+                    </pre>
                 </div>
             </div>
         </div>
@@ -135,7 +133,7 @@
 
 </body>
 
-<script type="text/javascript" src="js/aes.js"></script>
+<script type="text/javascript" src="js/aes.min.js"></script>
 <script type="text/javascript" src="js/jquery.min.js"></script>
 <script type="text/javascript" src="js/jquery.qrcode.min.js"></script>
 <script type="text/javascript" src="js/url.min.js"></script>
