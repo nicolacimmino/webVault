@@ -33,7 +33,7 @@
             <form class="navbar-form navbar-right" role="search">
                 <div class="form-group">
                     <label>Master Password:</label>
-                    <input id="masterPasswordSetup" type="password" class="form-control" placeholder="Master Password">
+                    <input id="masterPasswordSetup" onkeyup="window.vault.onMasterPasswordChange()" type="password" class="form-control" placeholder="Master Password">
                 </div>
                 <button type="button" class="btn btn-success" id="buttonSaveMasterPassword" onclick="window.vault.onMasterPasswordSave()">
                     <span class="glyphicon glyphicon-pushpin" aria-hidden="true"></span>

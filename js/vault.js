@@ -11,11 +11,10 @@ window.vault = (function ($, url) {
 
     function processQueryString() {
 
-        (url('?action') == 'decrypt') ? showDecryptPanel() : showEncryptPanel();
-
         if (url("?secret")) {
             showDecryptPanel();
             $("#encryptedText").val(url("?secret"));
+            onEncryptedTextChange();
         }
     }
 
@@ -35,26 +34,22 @@ window.vault = (function ($, url) {
         $("#panelEncrypt").hide();
     }
 
+    function onMasterPasswordChange() {
+
+        if ($("#panelEncrypt").css("display") === "none") {
+            decrypt();
+        }
+        else {
+            encrypt();
+        }
+    }
+
     function onPlainTextChange() {
-        var masterPassword = getCurrentMasterPassword();
-        var account = $("#account").val() || '';
-        var username = $("#username").val() || '';
-        var password = $("#password").val() || '';
+        encrypt();
+    }
 
-        var plaintext = JSON.stringify({
-            account: account,
-            username: username,
-            password: password
-        });
-
-        var encrypted = CryptoJS.AES.encrypt(plaintext, masterPassword).toString();
-
-        $("#encrypted").text(encrypted);
-
-        var url = $(location).attr('origin') + "?secret=" + encodeURIComponent(encrypted);
-        $("#decryptUrl").text("");
-        $("#decryptUrl").append("<a href='" + url + "'>" + url + "</a>");
-
+    function onEncryptedTextChange() {
+        decrypt();
     }
 
     function showSecretQRCode() {
@@ -123,10 +118,32 @@ window.vault = (function ($, url) {
     }
 
     function getCurrentMasterPassword() {
-        return $("#masterPasswordSetup").val() || sessionStorage.getItem("masterPassword")  || '';
+        return $("#masterPasswordSetup").val() || sessionStorage.getItem("masterPassword") || '';
     }
 
-    function onEncryptedTextChange() {
+    function encrypt() {
+        var masterPassword = getCurrentMasterPassword();
+        var account = $("#account").val() || '';
+        var username = $("#username").val() || '';
+        var password = $("#password").val() || '';
+
+        var plaintext = JSON.stringify({
+            account: account,
+            username: username,
+            password: password
+        });
+
+        var encrypted = CryptoJS.AES.encrypt(plaintext, masterPassword).toString();
+
+        $("#encrypted").text(encrypted);
+
+        var url = $(location).attr('origin') + "?secret=" + encodeURIComponent(encrypted);
+        $("#decryptUrl").text("");
+        $("#decryptUrl").append("<a href='" + url + "'>" + url + "</a>");
+
+    }
+
+    function decrypt() {
         var masterPassword = getCurrentMasterPassword();
         var encryptedText = $("#encryptedText").val();
 
@@ -163,7 +180,8 @@ window.vault = (function ($, url) {
         onMasterPasswordSave: onMasterPasswordSave,
         onMasterPasswordClear: onMasterPasswordClear,
         showEncryptPanel: showEncryptPanel,
-        showDecryptPanel: showDecryptPanel
+        showDecryptPanel: showDecryptPanel,
+        onMasterPasswordChange: onMasterPasswordChange
     };
 
 })(jQuery, url);
