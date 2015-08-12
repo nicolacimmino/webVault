@@ -161,7 +161,9 @@ window.vault = (function ($, url) {
         showSecretLinkQRCode: showSecretLinkQRCode,
         decryptStoredFile: decryptStoredFile,
         onMasterPasswordSave: onMasterPasswordSave,
-        onMasterPasswordClear: onMasterPasswordClear
+        onMasterPasswordClear: onMasterPasswordClear,
+        showEncryptPanel: showEncryptPanel,
+        showDecryptPanel: showDecryptPanel
     };
 
 })(jQuery, url);
