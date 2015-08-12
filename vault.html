@@ -17,6 +17,7 @@
             </button>
             <a class="navbar-brand" href="#">Vault</a>
         </div>
+
         <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
             <ul class="nav navbar-nav">
                 <li><a href="?action=encrypt">Encrypt</a></li>
@@ -29,7 +30,20 @@
                     </ul>
                 </li>
             </ul>
+            <form class="navbar-form navbar-right" role="search">
+                <div class="form-group">
+                    <label>Master Password:</label>
+                    <input id="masterPasswordSetup" type="password" class="form-control" placeholder="Master Password">
+                </div>
+                <button type="button" class="btn btn-success" id="buttonSaveMasterPassword" onclick="window.vault.onMasterPasswordSave()">
+                    <span class="glyphicon glyphicon-pushpin" aria-hidden="true"></span>
+                </button>
+                <button type="button" class="btn btn-danger" id="buttonClearMasterPassword" onclick="window.vault.onMasterPasswordClear()">
+                    <span class="glyphicon glyphicon-trash" aria-hidden="true"></span>
+                </button>
+            </form>
         </div>
+
     </div>
 </nav>
 
@@ -41,11 +55,6 @@
         <div class="panel-body">
             <div class="col-md-6">
                 <form>
-                    <div class="form-group">
-                        <label>Master Password</label>
-                        <input id="masterPasswordEncrypt" type="password" class="form-control"
-                               onkeyup="window.vault.onPlainTextChange()">
-                    </div>
                     <div class="form-group">
                         <label>Account</label>
                         <input id="account" type="text" class="form-control"
@@ -90,14 +99,10 @@
         </div>
         <div class="panel-body">
             <div class="col-md-6">
-                <div class="form-group">
-                    <label>Master Password</label>
-                    <input id="masterPasswordDecrypt" type="password" class="form-control"
-                           onkeyup="window.vault.onEncryptedTextChange()">
-                </div>
                 <label>Secret</label>
                 <textarea class="form-control" rows="3" id="encryptedText"
-                          onchange="vault.onEncryptedTextChange()"></textarea>
+                          oninput="vault.onEncryptedTextChange()">
+                </textarea>
             </div>
             <div class="col-md-6">
                 <div class="form-group">

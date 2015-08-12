@@ -6,6 +6,7 @@ window.vault = (function ($, url) {
         onPlainTextChange();
         populateSavedSecretsMenu();
         processQueryString();
+        updateSaveMasterPasswordButton();
     }
 
     function processQueryString() {
@@ -18,10 +19,10 @@ window.vault = (function ($, url) {
         }
     }
 
-    function showStoredFile(file)
-    {
+    function decryptStoredFile(file) {
         showDecryptPanel();
         $("#encryptedText").val(localStorage.getItem(file + ".cyp"));
+        onEncryptedTextChange();
     }
 
     function showEncryptPanel() {
@@ -35,7 +36,7 @@ window.vault = (function ($, url) {
     }
 
     function onPlainTextChange() {
-        var masterPassword = $("#masterPasswordEncrypt").val() || '';
+        var masterPassword = getCurrentMasterPassword();
         var account = $("#account").val() || '';
         var username = $("#username").val() || '';
         var password = $("#password").val() || '';
@@ -56,23 +57,20 @@ window.vault = (function ($, url) {
 
     }
 
-    function showSecretQRCode()
-    {
+    function showSecretQRCode() {
         $("#qrCodeModalLabel").text("Secret");
         var toShow = $("#encrypted").text();
         $('#qrcode').html('<div id="qrcodecanvas"></div>');
         showQRCode(toShow);
     }
 
-    function showSecretLinkQRCode()
-    {
+    function showSecretLinkQRCode() {
         $("#qrCodeModalLabel").text("Secret URL");
         var toShow = $("#decryptUrl").text();
         showQRCode(toShow);
     }
 
-    function showQRCode(toShow)
-    {
+    function showQRCode(toShow) {
         $('#qrcode').html('<div id="qrcodecanvas"></div>');
         $('#qrcodecanvas').qrcode(toShow);
         $('#qrCodeText').text(toShow);
@@ -89,19 +87,45 @@ window.vault = (function ($, url) {
         var savedSecretsMenu = $("#savedSecretsMenu");
         savedSecretsMenu.text("");
         for (var fileName in localStorage) {
-            if(fileName.slice(-4) != ".cyp")
-            {
+            if (fileName.slice(-4) != ".cyp") {
                 continue;
             }
             fileName = fileName.replace(".cyp", "");
             savedSecretsMenu.append(
-                '<li><a onclick="window.vault.showStoredFile(\'' + fileName + '\')">' + fileName + '</a></li>'
+                '<li><a onclick="window.vault.decryptStoredFile(\'' + fileName + '\')">' + fileName + '</a></li>'
             );
         }
     }
 
+    function onMasterPasswordSave() {
+        var masterPassword = $("#masterPasswordSetup").val() || '';
+        sessionStorage.setItem("masterPassword", masterPassword);
+        updateSaveMasterPasswordButton();
+    }
+
+    function onMasterPasswordClear() {
+        $("#masterPasswordSetup").val("");
+        sessionStorage.removeItem("masterPassword");
+        updateSaveMasterPasswordButton();
+    }
+
+    function updateSaveMasterPasswordButton() {
+        if (sessionStorage.getItem("masterPassword") != null) {
+            $("#buttonSaveMasterPassword").hide();
+            $("#buttonClearMasterPassword").show();
+        }
+        else {
+            $("#buttonSaveMasterPassword").show();
+            $("#buttonClearMasterPassword").hide();
+        }
+    }
+
+    function getCurrentMasterPassword() {
+        return sessionStorage.getItem("masterPassword") || $("#masterPasswordSetup").val() || '';
+    }
+
     function onEncryptedTextChange() {
-        var masterPassword = $("#masterPasswordDecrypt").val() || '';
+        var masterPassword = getCurrentMasterPassword();
         var encryptedText = $("#encryptedText").val();
 
         $("#decrypted").text("");
@@ -133,7 +157,9 @@ window.vault = (function ($, url) {
         onEncryptedTextChange: onEncryptedTextChange,
         showSecretQRCode: showSecretQRCode,
         showSecretLinkQRCode: showSecretLinkQRCode,
-        showStoredFile: showStoredFile
+        decryptStoredFile: decryptStoredFile,
+        onMasterPasswordSave: onMasterPasswordSave,
+        onMasterPasswordClear: onMasterPasswordClear
     };
 
 })(jQuery, url);
