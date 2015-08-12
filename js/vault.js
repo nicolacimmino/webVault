@@ -3,6 +3,7 @@ window.vault = window.vault || {};
 window.vault = (function ($, url) {
 
     function init() {
+        showEncryptPanel();
         onPlainTextChange();
         populateSavedSecretsMenu();
         processQueryString();
@@ -15,6 +16,7 @@ window.vault = (function ($, url) {
             showDecryptPanel();
             $("#encryptedText").val(url("?secret"));
             onEncryptedTextChange();
+            window.history.pushState("", "", "/");
         }
     }
 
@@ -109,11 +111,13 @@ window.vault = (function ($, url) {
             $("#buttonSaveMasterPassword").hide();
             $("#buttonClearMasterPassword").show();
             $("#masterPasswordSetup").attr("placeholder", "****")
+            $("#masterPasswordSetup").attr("disabled", 1);
         }
         else {
             $("#buttonSaveMasterPassword").show();
             $("#buttonClearMasterPassword").hide();
             $("#masterPasswordSetup").attr("placeholder", "Master Password")
+            $("#masterPasswordSetup").removeAttr("disabled");
         }
     }
 
